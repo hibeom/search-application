@@ -6,6 +6,8 @@ import javax.inject.Inject
 class BaseSearchRepository @Inject constructor(
     private val dataSource: DataSource
 ) : SearchRepository {
-    override suspend fun getImages(query: String) = dataSource.getImages(query)
+    override suspend fun getImageThumbnails(query: String) = dataSource.getImageThumbnails(query)
+
+    override suspend fun getVideoThumbnails(query: String) = dataSource.getVideoThumbnails(query)
 
 }

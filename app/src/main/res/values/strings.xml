@@ -2,4 +2,7 @@
     <string name="app_name">Search Application</string>
     <string name="title_search">Search</string>
     <string name="title_storage">Storage</string>
+    <string name="empty_result">Empty Result</string>
+    <string name="network_error_occurred">Network error occurred</string>
+    <string name="search">Search</string>
 </resources>

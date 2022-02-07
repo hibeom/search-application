@@ -1,6 +1,6 @@
 package com.pinkcloud.domain.model
 
-data class Image(
+data class Thumbnail(
     val thumbnailUrl: String?,
     val datetime: String?
 )
