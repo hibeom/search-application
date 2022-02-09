@@ -8,4 +8,8 @@ import kotlinx.coroutines.flow.Flow
 interface SearchRepository {
 
     fun getThumbnailPagingFlow(query: String): Flow<PagingData<Thumbnail>>
+
+    suspend fun saveThumbnails(thumbnails: Map<String, Thumbnail>)
+
+    suspend fun getSavedThumbnails(): Map<String, Thumbnail>
 }

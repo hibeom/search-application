@@ -15,9 +15,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.paging.LoadState
 import androidx.paging.PagingData
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.pinkcloud.domain.model.Thumbnail
-import com.pinkcloud.domain.util.Result
 import com.pinkcloud.searchapplication.databinding.SearchFragmentBinding
 import com.pinkcloud.searchapplication.util.calculateSpanCount
 import com.pinkcloud.searchapplication.util.hideKeyboard
@@ -93,7 +91,7 @@ class SearchFragment : Fragment() {
     ) {
         val spanCount = calculateSpanCount(requireActivity())
         val footerAdapter = ThumbnailLoadStateAdapter()
-        val thumbnailAdapter = ThumbnailAdapter(onClickThumbnail)
+        val thumbnailAdapter = ThumbnailPagingAdapter(onClickThumbnail)
         list.apply {
             adapter = thumbnailAdapter.withLoadStateFooter(
                 footer = footerAdapter

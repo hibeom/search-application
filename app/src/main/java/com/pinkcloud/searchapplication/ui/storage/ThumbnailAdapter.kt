@@ -1,28 +1,20 @@
-package com.pinkcloud.searchapplication.ui.search
+package com.pinkcloud.searchapplication.ui.storage
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.pinkcloud.domain.model.Thumbnail
 import com.pinkcloud.searchapplication.databinding.ThumbnailItemLayoutBinding
 
-class ThumbnailAdapter(
-    private val onClick: (Thumbnail) -> Unit
-) : PagingDataAdapter<Thumbnail, ThumbnailAdapter.ViewHolder>(DiffCallback()) {
+class ThumbnailAdapter: ListAdapter<Thumbnail, ThumbnailAdapter.ViewHolder>(DiffCallback()) {
 
-    class ViewHolder(private val binding: ThumbnailItemLayoutBinding) :
-        RecyclerView.ViewHolder(binding.root) {
+    class ViewHolder(private val binding: ThumbnailItemLayoutBinding): RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(thumbnail: Thumbnail, onClick: (Thumbnail) -> Unit) {
+        fun bind(thumbnail: Thumbnail) {
             binding.thumbnail = thumbnail
-            binding.isSelected = thumbnail.isSelected
-            binding.imageView.setOnClickListener {
-                thumbnail.isSelected = !thumbnail.isSelected
-                binding.isSelected = thumbnail.isSelected
-                onClick(thumbnail)
-            }
+            binding.isSelected = false
         }
 
         companion object {
@@ -39,13 +31,11 @@ class ThumbnailAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        getItem(position)?.let { thumbnail ->
-            holder.bind(thumbnail, onClick)
-        }
+        holder.bind(getItem(position))
     }
 }
 
-class DiffCallback : DiffUtil.ItemCallback<Thumbnail>() {
+class DiffCallback: DiffUtil.ItemCallback<Thumbnail>() {
     override fun areItemsTheSame(oldItem: Thumbnail, newItem: Thumbnail): Boolean {
         return oldItem.thumbnailUrl == newItem.thumbnailUrl
     }

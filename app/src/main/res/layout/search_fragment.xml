@@ -45,6 +45,7 @@
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             app:selectedThumbnails="@{viewModel.selectedThumbnails}"
+            android:onClick="@{() -> viewModel.save()}"
             android:text="@string/save"/>
 
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout

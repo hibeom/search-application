@@ -2,7 +2,6 @@ package com.pinkcloud.searchapplication.util
 
 import android.widget.Button
 import android.widget.ImageView
-import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.core.view.isVisible
 import androidx.databinding.BindingAdapter
@@ -11,7 +10,8 @@ import com.bumptech.glide.Glide
 import com.pinkcloud.domain.model.Thumbnail
 import com.pinkcloud.domain.util.Result
 import com.pinkcloud.searchapplication.R
-import com.pinkcloud.searchapplication.ui.search.ThumbnailAdapter
+import com.pinkcloud.searchapplication.ui.search.ThumbnailPagingAdapter
+import com.pinkcloud.searchapplication.ui.storage.ThumbnailAdapter
 
 @BindingAdapter("image")
 fun setImage(imageView: ImageView, image: Thumbnail) {
@@ -29,26 +29,15 @@ fun Button.setEnableBySelectedThumbnailsSize(thumbnails: Map<String, Thumbnail>)
     isEnabled = thumbnails.isNotEmpty()
 }
 
-//@BindingAdapter("items")
-//fun setItems(list: RecyclerView, thumbnailsState: Result<List<Thumbnail>>) {
-//    val adapter = list.adapter as? ThumbnailAdapter
-//    if (thumbnailsState is Result.Success) {
-//        adapter?.submitList(thumbnailsState.data)
-//    }
-//    list.isVisible = thumbnailsState !is Result.Error
-//}
-//
-//@BindingAdapter("errorVisibility")
-//fun setErrorVisibility(textView: TextView, thumbnailsState: Result<List<Thumbnail>>) {
-//    textView.isVisible = thumbnailsState is Result.Error
-//}
-//
-//@BindingAdapter("emptyVisibility")
-//fun setEmptyVisibility(textView: TextView, thumbnailsState: Result<List<Thumbnail>>) {
-//    textView.isVisible = (thumbnailsState is Result.Success) && (thumbnailsState.data!!.isEmpty())
-//}
-//
-//@BindingAdapter("loadingVisibility")
-//fun setLoadingVisibility(progressbar: ProgressBar, thumbnailsState: Result<List<Thumbnail>>) {
-//    progressbar.isVisible = thumbnailsState is Result.Loading
-//}
+@BindingAdapter("items")
+fun setItems(list: RecyclerView, thumbnails: List<Thumbnail>) {
+    val adapter = list.adapter as? ThumbnailAdapter
+    adapter?.let {
+        adapter.submitList(thumbnails)
+    }
+}
+
+@BindingAdapter("emptyVisibility")
+fun setEmptyVisibility(textView: TextView, thumbnails: List<Thumbnail>) {
+    textView.isVisible = thumbnails.isEmpty()
+}
