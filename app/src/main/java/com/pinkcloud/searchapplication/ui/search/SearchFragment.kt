@@ -6,11 +6,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.paging.LoadState
+import androidx.paging.PagingData
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.pinkcloud.domain.model.Thumbnail
@@ -20,6 +23,7 @@ import com.pinkcloud.searchapplication.util.calculateSpanCount
 import com.pinkcloud.searchapplication.util.hideKeyboard
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -41,7 +45,9 @@ class SearchFragment : Fragment() {
                 viewModel.search(query)
             }
         )
-        binding.setSearchResult()
+        binding.setSearchResult(
+            pagingDataFlow = viewModel.pagingDataFlow
+        )
 
         return binding.root
     }
@@ -79,12 +85,46 @@ class SearchFragment : Fragment() {
     }
 
     private fun SearchFragmentBinding.setSearchResult(
+        pagingDataFlow: Flow<PagingData<Thumbnail>>
     ) {
         val spanCount = calculateSpanCount(requireActivity())
-
+        val footerAdapter = ThumbnailLoadStateAdapter()
+        val thumbnailAdapter = ThumbnailAdapter()
         list.apply {
-            adapter = ThumbnailAdapter()
-            layoutManager = GridLayoutManager(context, spanCount)
+            adapter = thumbnailAdapter.withLoadStateFooter(
+                footer = footerAdapter
+            )
+            layoutManager = GridLayoutManager(context, spanCount).apply {
+                spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+                    override fun getSpanSize(position: Int): Int {
+                        return if (position == thumbnailAdapter.itemCount && footerAdapter.itemCount > 0) spanCount
+                        else 1
+                    }
+                }
+            }
+        }
+
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                pagingDataFlow
+                    .collectLatest { pagingData ->
+                        thumbnailAdapter.submitData(pagingData)
+                    }
+            }
+        }
+
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                thumbnailAdapter.loadStateFlow.collectLatest { loadState ->
+                    val isListEmpty =
+                        loadState.refresh is LoadState.NotLoading && thumbnailAdapter.itemCount == 0
+                    textEmpty.isVisible = isListEmpty
+                    list.isVisible = !isListEmpty
+                    textError.isVisible = loadState.source.refresh is LoadState.Error
+                    loadingBar.isVisible = loadState.source.refresh is LoadState.Loading
+                    if (loadState.source.refresh is LoadState.Error) list.isVisible = false
+                }
+            }
         }
     }
 }

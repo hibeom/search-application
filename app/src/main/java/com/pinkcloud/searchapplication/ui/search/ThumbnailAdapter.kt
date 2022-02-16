@@ -2,13 +2,13 @@ package com.pinkcloud.searchapplication.ui.search
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.pinkcloud.domain.model.Thumbnail
 import com.pinkcloud.searchapplication.databinding.ThumbnailItemLayoutBinding
 
-class ThumbnailAdapter: ListAdapter<Thumbnail, ThumbnailAdapter.ViewHolder>(DiffCallback()) {
+class ThumbnailAdapter: PagingDataAdapter<Thumbnail, ThumbnailAdapter.ViewHolder>(DiffCallback()) {
 
     class ViewHolder(private val binding: ThumbnailItemLayoutBinding): RecyclerView.ViewHolder(binding.root) {
 
@@ -30,7 +30,9 @@ class ThumbnailAdapter: ListAdapter<Thumbnail, ThumbnailAdapter.ViewHolder>(Diff
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(getItem(position))
+        getItem(position)?.let { thumbnail ->
+            holder.bind(thumbnail)
+        }
     }
 }
 

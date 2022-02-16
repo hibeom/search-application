@@ -4,10 +4,7 @@ import com.pinkcloud.domain.repository.SearchRepository
 import javax.inject.Inject
 
 class BaseSearchRepository @Inject constructor(
-    private val dataSource: DataSource
+    private val pagingDataSource: PagingDataSource
 ) : SearchRepository {
-    override suspend fun getImageThumbnails(query: String) = dataSource.getImageThumbnails(query)
-
-    override suspend fun getVideoThumbnails(query: String) = dataSource.getVideoThumbnails(query)
-
+    override fun getThumbnailPagingFlow(query: String) = pagingDataSource.getPagingStream(query)
 }

@@ -3,6 +3,8 @@ package com.pinkcloud.searchapplication.ui.search
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import com.pinkcloud.domain.model.Thumbnail
 import com.pinkcloud.domain.usecase.GetThumbnailsUseCase
 import com.pinkcloud.domain.util.Result
@@ -16,21 +18,18 @@ class SearchViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    val thumbnailsState: StateFlow<Result<List<Thumbnail>>>
-
     private val _query = MutableStateFlow(DEFAULT_QUERY)
     val query: StateFlow<String>
         get() = _query
 
+    val pagingDataFlow: Flow<PagingData<Thumbnail>>
+
     init {
         val initialQuery: String = savedStateHandle.get(LAST_SEARCH_QUERY) ?: DEFAULT_QUERY
         _query.value = initialQuery
-        thumbnailsState = query.flatMapLatest {
-            flow {
-                emit(Result.Loading())
-                emit(getThumbnailsUseCase(it))
-            }
-        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), Result.Loading())
+        pagingDataFlow = query.flatMapLatest {
+            getThumbnailsUseCase(it)
+        }.cachedIn(viewModelScope)
     }
 
     fun search(query: String) {
