@@ -7,13 +7,13 @@ import com.squareup.moshi.JsonClass
 @JsonClass(generateAdapter = true)
 data class ImageResponse(
     val meta: Meta,
-    val imageDocuments: List<ImageDocument>
+    val documents: List<ImageDocument>
 )
 
 @JsonClass(generateAdapter = true)
 data class VideoResponse(
     val meta: Meta,
-    val videoDocuments: List<VideoDocument>
+    val documents: List<VideoDocument>
 )
 
 @JsonClass(generateAdapter = true)

@@ -9,7 +9,7 @@ import com.pinkcloud.domain.util.Result
 fun Result<ImageResponse>.asDomainModel(): Result<List<Thumbnail>> {
     return when (this) {
         is Result.Success -> {
-            Result.Success(data!!.imageDocuments.map {
+            Result.Success(data!!.documents.map {
                 it.asThumbnail()
             })
         }
@@ -21,7 +21,7 @@ fun Result<ImageResponse>.asDomainModel(): Result<List<Thumbnail>> {
 fun Result<VideoResponse>.asDomainModel(): Result<List<Thumbnail>> {
     return when (this) {
         is Result.Success -> {
-            Result.Success(data!!.videoDocuments.map {
+            Result.Success(data!!.documents.map {
                 it.asThumbnail()
             })
         }

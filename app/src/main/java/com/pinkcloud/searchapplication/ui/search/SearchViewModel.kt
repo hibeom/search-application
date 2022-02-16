@@ -25,7 +25,6 @@ class SearchViewModel @Inject constructor(
     init {
         val initialQuery: String = savedStateHandle.get(LAST_SEARCH_QUERY) ?: DEFAULT_QUERY
         _query.value = initialQuery
-
         thumbnailsState = query.flatMapLatest {
             flow {
                 emit(Result.Loading())

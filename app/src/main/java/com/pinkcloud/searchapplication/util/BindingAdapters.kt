@@ -29,6 +29,7 @@ fun setItems(list: RecyclerView, thumbnailsState: Result<List<Thumbnail>>) {
     if (thumbnailsState is Result.Success) {
         adapter?.submitList(thumbnailsState.data)
     }
+    list.isVisible = thumbnailsState !is Result.Error
 }
 
 @BindingAdapter("errorVisibility")
