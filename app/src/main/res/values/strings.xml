@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Search Application</string>
+    <string name="title_search">Search</string>
+    <string name="title_storage">Storage</string>
+</resources>
