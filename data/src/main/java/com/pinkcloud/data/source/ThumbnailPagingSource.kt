@@ -45,7 +45,8 @@ class ThumbnailPagingSource(
                 val videoThumbnails = videoResponse.documents.map {
                     it.asThumbnail()
                 }
-                Pair(imageThumbnails + videoThumbnails, imageResponse.meta.isEnd)
+                val thumbnails = (imageThumbnails + videoThumbnails).sortedByDescending { it.datetime }
+                Pair(thumbnails, imageResponse.meta.isEnd)
             }
 
             val nextKey = if (isEnd || thumbnails.isEmpty() || position >= MAX_IMAGE_PAGE) {

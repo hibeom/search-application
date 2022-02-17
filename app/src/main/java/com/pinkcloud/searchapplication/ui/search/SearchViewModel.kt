@@ -24,6 +24,10 @@ class SearchViewModel @Inject constructor(
 
     val pagingDataFlow: Flow<PagingData<Thumbnail>>
 
+    private val _selectedThumbnails = MutableStateFlow(mapOf<String, Thumbnail>())
+    val selectedThumbnails: StateFlow<Map<String, Thumbnail>>
+        get() = _selectedThumbnails
+
     init {
         val initialQuery: String = savedStateHandle.get(LAST_SEARCH_QUERY) ?: DEFAULT_QUERY
         _query.value = initialQuery
@@ -34,6 +38,31 @@ class SearchViewModel @Inject constructor(
 
     fun search(query: String) {
         _query.value = query
+        _selectedThumbnails.value = mutableMapOf()
+    }
+
+    fun save() {
+        //TODO save selected thumbnails to repository
+    }
+
+    fun onSelectThumbnail(thumbnail: Thumbnail) {
+        selectedThumbnails.value[thumbnail.thumbnailUrl]?.let {
+            removeSelectedThumbnail(thumbnail)
+        } ?: run {
+            addSelectedThumbnail(thumbnail)
+        }
+    }
+
+    private fun addSelectedThumbnail(thumbnail: Thumbnail) {
+        _selectedThumbnails.value = selectedThumbnails.value.toMutableMap().also { map ->
+            map[thumbnail.thumbnailUrl!!] = thumbnail
+        }
+    }
+
+    private fun removeSelectedThumbnail(thumbnail: Thumbnail) {
+        _selectedThumbnails.value = selectedThumbnails.value.toMutableMap().also { map ->
+            map.remove(thumbnail.thumbnailUrl)
+        }
     }
 
     override fun onCleared() {

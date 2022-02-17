@@ -46,7 +46,10 @@ class SearchFragment : Fragment() {
             }
         )
         binding.setSearchResult(
-            pagingDataFlow = viewModel.pagingDataFlow
+            pagingDataFlow = viewModel.pagingDataFlow,
+            onClickThumbnail = { thumbnail ->
+                viewModel.onSelectThumbnail(thumbnail)
+            }
         )
 
         return binding.root
@@ -85,11 +88,12 @@ class SearchFragment : Fragment() {
     }
 
     private fun SearchFragmentBinding.setSearchResult(
-        pagingDataFlow: Flow<PagingData<Thumbnail>>
+        pagingDataFlow: Flow<PagingData<Thumbnail>>,
+        onClickThumbnail: (Thumbnail) -> Unit
     ) {
         val spanCount = calculateSpanCount(requireActivity())
         val footerAdapter = ThumbnailLoadStateAdapter()
-        val thumbnailAdapter = ThumbnailAdapter()
+        val thumbnailAdapter = ThumbnailAdapter(onClickThumbnail)
         list.apply {
             adapter = thumbnailAdapter.withLoadStateFooter(
                 footer = footerAdapter
@@ -121,10 +125,14 @@ class SearchFragment : Fragment() {
                     textEmpty.isVisible = isListEmpty
                     list.isVisible = !isListEmpty
                     textError.isVisible = loadState.source.refresh is LoadState.Error
-                    loadingBar.isVisible = loadState.source.refresh is LoadState.Loading
+                    swipeRefreshLayout.isRefreshing = loadState.source.refresh is LoadState.Loading
                     if (loadState.source.refresh is LoadState.Error) list.isVisible = false
                 }
             }
+        }
+
+        swipeRefreshLayout.setOnRefreshListener {
+            thumbnailAdapter.refresh()
         }
     }
 }

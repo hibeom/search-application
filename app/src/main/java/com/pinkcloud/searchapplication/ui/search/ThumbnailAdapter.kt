@@ -8,12 +8,21 @@ import androidx.recyclerview.widget.RecyclerView
 import com.pinkcloud.domain.model.Thumbnail
 import com.pinkcloud.searchapplication.databinding.ThumbnailItemLayoutBinding
 
-class ThumbnailAdapter: PagingDataAdapter<Thumbnail, ThumbnailAdapter.ViewHolder>(DiffCallback()) {
+class ThumbnailAdapter(
+    private val onClick: (Thumbnail) -> Unit
+) : PagingDataAdapter<Thumbnail, ThumbnailAdapter.ViewHolder>(DiffCallback()) {
 
-    class ViewHolder(private val binding: ThumbnailItemLayoutBinding): RecyclerView.ViewHolder(binding.root) {
+    class ViewHolder(private val binding: ThumbnailItemLayoutBinding) :
+        RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(thumbnail: Thumbnail) {
+        fun bind(thumbnail: Thumbnail, onClick: (Thumbnail) -> Unit) {
             binding.thumbnail = thumbnail
+            binding.isSelected = thumbnail.isSelected
+            binding.imageView.setOnClickListener {
+                thumbnail.isSelected = !thumbnail.isSelected
+                binding.isSelected = thumbnail.isSelected
+                onClick(thumbnail)
+            }
         }
 
         companion object {
@@ -31,12 +40,12 @@ class ThumbnailAdapter: PagingDataAdapter<Thumbnail, ThumbnailAdapter.ViewHolder
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         getItem(position)?.let { thumbnail ->
-            holder.bind(thumbnail)
+            holder.bind(thumbnail, onClick)
         }
     }
 }
 
-class DiffCallback: DiffUtil.ItemCallback<Thumbnail>() {
+class DiffCallback : DiffUtil.ItemCallback<Thumbnail>() {
     override fun areItemsTheSame(oldItem: Thumbnail, newItem: Thumbnail): Boolean {
         return oldItem.thumbnailUrl == newItem.thumbnailUrl
     }

@@ -1,5 +1,6 @@
 package com.pinkcloud.searchapplication.util
 
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
@@ -15,12 +16,17 @@ import com.pinkcloud.searchapplication.ui.search.ThumbnailAdapter
 @BindingAdapter("image")
 fun setImage(imageView: ImageView, image: Thumbnail) {
     image.run {
-        Glide.with(imageView.context)
+        Glide.with(imageView)
             .load(thumbnailUrl)
             .placeholder(R.color.gray)
             .centerCrop()
             .into(imageView)
     }
+}
+
+@BindingAdapter("selectedThumbnails")
+fun Button.setEnableBySelectedThumbnailsSize(thumbnails: Map<String, Thumbnail>) {
+    isEnabled = thumbnails.isNotEmpty()
 }
 
 //@BindingAdapter("items")

@@ -5,4 +5,6 @@
     <string name="empty_result">Empty Result</string>
     <string name="network_error_occurred">Network error occurred</string>
     <string name="search">Search</string>
+    <string name="pick">Pick</string>
+    <string name="save">Save</string>
 </resources>
