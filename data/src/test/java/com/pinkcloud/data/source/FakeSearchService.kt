@@ -24,7 +24,10 @@ class FakeSearchService(
         val toIndex = if (page * size > FAKE_IMAGE_SIZE) FAKE_IMAGE_SIZE else page * size
         return ImageResponse(
             meta = meta,
-            documents = imageDocuments.subList(fromIndex, toIndex)
+            documents = if (fromIndex < FAKE_IMAGE_SIZE) imageDocuments.subList(
+                fromIndex,
+                toIndex
+            ) else listOf()
         )
     }
 
@@ -42,7 +45,10 @@ class FakeSearchService(
         val toIndex = if (page * size > FAKE_VIDEO_SIZE) FAKE_VIDEO_SIZE else page * size
         return VideoResponse(
             meta = meta,
-            documents = videoDocuments.subList(fromIndex, toIndex)
+            documents = if (fromIndex < FAKE_VIDEO_SIZE) videoDocuments.subList(
+                fromIndex,
+                toIndex
+            ) else listOf()
         )
     }
 }

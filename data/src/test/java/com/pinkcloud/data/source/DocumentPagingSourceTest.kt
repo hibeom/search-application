@@ -6,6 +6,7 @@ import androidx.paging.PagingSource.LoadParams
 import com.pinkcloud.data.api.ImageDocument
 import com.pinkcloud.data.api.VideoDocument
 import com.pinkcloud.data.api.asDocument
+import com.pinkcloud.domain.model.Document
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
@@ -62,6 +63,52 @@ class DocumentPagingSourceTest {
 
     @Test
     fun load_overVideoSize() = runTest {
-        fail()
+        val page = FAKE_VIDEO_SIZE / VIDEO_PAGE_SIZE + 1
+        val expectedList =
+            fakeImageDocuments.slice((page-1)*IMAGE_PAGE_SIZE until (page)*IMAGE_PAGE_SIZE).map {
+                it.asDocument()
+            } + fakeVideoDocuments.slice((page-1)*VIDEO_PAGE_SIZE until FAKE_VIDEO_SIZE).map {
+                it.asDocument()
+            }
+
+        assertEquals(
+            expected = LoadResult.Page(
+                data = expectedList,
+                prevKey = page-1,
+                nextKey = page+1
+            ),
+            actual = pagingSource.load(
+                LoadParams.Refresh(
+                    key = page,
+                    loadSize = IMAGE_PAGE_SIZE + VIDEO_PAGE_SIZE,
+                    placeholdersEnabled = true
+                )
+            )
+        )
+    }
+
+    @Test
+    fun load_isEnd() = runTest {
+        val page = FAKE_IMAGE_SIZE / IMAGE_PAGE_SIZE + 1
+
+        val expectedList =
+            fakeImageDocuments.slice((page-1)*IMAGE_PAGE_SIZE until FAKE_IMAGE_SIZE).map {
+                it.asDocument()
+            }
+
+        assertEquals(
+            expected = LoadResult.Page(
+                data = expectedList,
+                prevKey = page-1,
+                nextKey = null
+            ),
+            actual = pagingSource.load(
+                LoadParams.Refresh(
+                    key = page,
+                    loadSize = IMAGE_PAGE_SIZE + VIDEO_PAGE_SIZE,
+                    placeholdersEnabled = true
+                )
+            )
+        )
     }
 }
