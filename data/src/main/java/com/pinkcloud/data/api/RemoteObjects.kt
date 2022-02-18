@@ -48,7 +48,7 @@ data class VideoDocument(
     val datetime: String?,
     val author: String?,
     @Json(name = "play_time")
-    val playTime: Int
+    val playTime: Int?
 )
 
 fun ImageDocument.asDocument(): Document {

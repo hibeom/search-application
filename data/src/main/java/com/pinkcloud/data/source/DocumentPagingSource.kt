@@ -10,8 +10,8 @@ import java.io.IOException
 
 private const val START_PAGE_INDEX = 1
 const val PAGE_SIZE = 60
-private const val VIDEO_PAGE_SIZE = 15
-private const val IMAGE_PAGE_SIZE = 45
+const val VIDEO_PAGE_SIZE = 15
+const val IMAGE_PAGE_SIZE = 45
 private const val MAX_VIDEO_PAGE = 15
 private const val MAX_IMAGE_PAGE = 50
 
