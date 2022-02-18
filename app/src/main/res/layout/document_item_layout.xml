@@ -8,8 +8,8 @@
             name="isSelected"
             type="java.lang.Boolean" />
         <variable
-            name="thumbnail"
-            type="com.pinkcloud.domain.model.Thumbnail" />
+            name="document"
+            type="com.pinkcloud.domain.model.Document" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -23,7 +23,7 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintDimensionRatio="1:1"
             android:padding="@dimen/margin_image_item"
-            app:image="@{thumbnail}" />
+            app:image="@{document}" />
 
         <ImageView
             android:id="@+id/check_image"

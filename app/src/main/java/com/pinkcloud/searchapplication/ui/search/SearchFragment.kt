@@ -15,7 +15,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.paging.LoadState
 import androidx.paging.PagingData
 import androidx.recyclerview.widget.GridLayoutManager
-import com.pinkcloud.domain.model.Thumbnail
+import com.pinkcloud.domain.model.Document
 import com.pinkcloud.searchapplication.databinding.SearchFragmentBinding
 import com.pinkcloud.searchapplication.util.calculateSpanCount
 import com.pinkcloud.searchapplication.util.hideKeyboard
@@ -45,8 +45,8 @@ class SearchFragment : Fragment() {
         )
         binding.setSearchResult(
             pagingDataFlow = viewModel.pagingDataFlow,
-            onClickThumbnail = { thumbnail ->
-                viewModel.onSelectThumbnail(thumbnail)
+            onClickDocument = { document ->
+                viewModel.onSelectDocument(document)
             }
         )
 
@@ -86,20 +86,20 @@ class SearchFragment : Fragment() {
     }
 
     private fun SearchFragmentBinding.setSearchResult(
-        pagingDataFlow: Flow<PagingData<Thumbnail>>,
-        onClickThumbnail: (Thumbnail) -> Unit
+        pagingDataFlow: Flow<PagingData<Document>>,
+        onClickDocument: (Document) -> Unit
     ) {
         val spanCount = calculateSpanCount(requireActivity())
-        val footerAdapter = ThumbnailLoadStateAdapter()
-        val thumbnailAdapter = ThumbnailPagingAdapter(onClickThumbnail)
+        val footerAdapter = DocumentLoadStateAdapter()
+        val documentAdapter = DocumentPagingAdapter(onClickDocument)
         list.apply {
-            adapter = thumbnailAdapter.withLoadStateFooter(
+            adapter = documentAdapter.withLoadStateFooter(
                 footer = footerAdapter
             )
             layoutManager = GridLayoutManager(context, spanCount).apply {
                 spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
                     override fun getSpanSize(position: Int): Int {
-                        return if (position == thumbnailAdapter.itemCount && footerAdapter.itemCount > 0) spanCount
+                        return if (position == documentAdapter.itemCount && footerAdapter.itemCount > 0) spanCount
                         else 1
                     }
                 }
@@ -110,16 +110,16 @@ class SearchFragment : Fragment() {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 pagingDataFlow
                     .collectLatest { pagingData ->
-                        thumbnailAdapter.submitData(pagingData)
+                        documentAdapter.submitData(pagingData)
                     }
             }
         }
 
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                thumbnailAdapter.loadStateFlow.collectLatest { loadState ->
+                documentAdapter.loadStateFlow.collectLatest { loadState ->
                     val isListEmpty =
-                        loadState.refresh is LoadState.NotLoading && thumbnailAdapter.itemCount == 0
+                        loadState.refresh is LoadState.NotLoading && documentAdapter.itemCount == 0
                     textEmpty.isVisible = isListEmpty
                     list.isVisible = !isListEmpty
                     textError.isVisible = loadState.source.refresh is LoadState.Error
@@ -130,7 +130,7 @@ class SearchFragment : Fragment() {
         }
 
         swipeRefreshLayout.setOnRefreshListener {
-            thumbnailAdapter.refresh()
+            documentAdapter.refresh()
         }
     }
 }

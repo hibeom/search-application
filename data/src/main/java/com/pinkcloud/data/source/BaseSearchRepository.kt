@@ -1,7 +1,7 @@
 package com.pinkcloud.data.source
 
 import com.pinkcloud.data.di.DefaultDispatcher
-import com.pinkcloud.domain.model.Thumbnail
+import com.pinkcloud.domain.model.Document
 import com.pinkcloud.domain.repository.SearchRepository
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
@@ -12,14 +12,14 @@ class BaseSearchRepository @Inject constructor(
     @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher,
 ) : SearchRepository {
 
-    private val savedThumbnails = mutableMapOf<String, Thumbnail>()
+    private val savedDocuments = mutableMapOf<String, Document>()
 
-    override fun getThumbnailPagingFlow(query: String) = pagingDataSource.getPagingStream(query)
+    override fun getDocumentPagingFlow(query: String) = pagingDataSource.getPagingStream(query)
 
-    override suspend fun saveThumbnails(thumbnails: Map<String, Thumbnail>) =
+    override suspend fun saveDocuments(documents: Map<String, Document>) =
         withContext(defaultDispatcher) {
-            savedThumbnails.putAll(thumbnails)
+            savedDocuments.putAll(documents)
         }
 
-    override suspend fun getSavedThumbnails() = savedThumbnails
+    override suspend fun getSavedDocuments() = savedDocuments
 }

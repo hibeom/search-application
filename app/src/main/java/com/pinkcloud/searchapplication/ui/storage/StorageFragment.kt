@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
-import com.pinkcloud.searchapplication.R
 import com.pinkcloud.searchapplication.databinding.StorageFragmentBinding
 import com.pinkcloud.searchapplication.util.calculateSpanCount
 import dagger.hilt.android.AndroidEntryPoint
@@ -34,7 +33,7 @@ class StorageFragment : Fragment() {
     private fun StorageFragmentBinding.setList() {
         val spanCount = calculateSpanCount(requireActivity())
         list.apply {
-            adapter = ThumbnailAdapter()
+            adapter = DocumentAdapter()
             layoutManager = GridLayoutManager(context, spanCount)
         }
     }

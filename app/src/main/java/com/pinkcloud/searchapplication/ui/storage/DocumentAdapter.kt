@@ -5,22 +5,22 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.pinkcloud.domain.model.Thumbnail
-import com.pinkcloud.searchapplication.databinding.ThumbnailItemLayoutBinding
+import com.pinkcloud.domain.model.Document
+import com.pinkcloud.searchapplication.databinding.DocumentItemLayoutBinding
 
-class ThumbnailAdapter: ListAdapter<Thumbnail, ThumbnailAdapter.ViewHolder>(DiffCallback()) {
+class DocumentAdapter: ListAdapter<Document, DocumentAdapter.ViewHolder>(DiffCallback()) {
 
-    class ViewHolder(private val binding: ThumbnailItemLayoutBinding): RecyclerView.ViewHolder(binding.root) {
+    class ViewHolder(private val binding: DocumentItemLayoutBinding): RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(thumbnail: Thumbnail) {
-            binding.thumbnail = thumbnail
+        fun bind(document: Document) {
+            binding.document = document
             binding.isSelected = false
         }
 
         companion object {
             fun from(parent: ViewGroup): ViewHolder {
                 val layoutInflater = LayoutInflater.from(parent.context)
-                val binding = ThumbnailItemLayoutBinding.inflate(layoutInflater, parent, false)
+                val binding = DocumentItemLayoutBinding.inflate(layoutInflater, parent, false)
                 return ViewHolder(binding)
             }
         }
@@ -35,12 +35,12 @@ class ThumbnailAdapter: ListAdapter<Thumbnail, ThumbnailAdapter.ViewHolder>(Diff
     }
 }
 
-class DiffCallback: DiffUtil.ItemCallback<Thumbnail>() {
-    override fun areItemsTheSame(oldItem: Thumbnail, newItem: Thumbnail): Boolean {
+class DiffCallback: DiffUtil.ItemCallback<Document>() {
+    override fun areItemsTheSame(oldItem: Document, newItem: Document): Boolean {
         return oldItem.thumbnailUrl == newItem.thumbnailUrl
     }
 
-    override fun areContentsTheSame(oldItem: Thumbnail, newItem: Thumbnail): Boolean {
+    override fun areContentsTheSame(oldItem: Document, newItem: Document): Boolean {
         return oldItem == newItem
     }
 }

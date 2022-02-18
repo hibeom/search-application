@@ -5,9 +5,9 @@ import android.view.ViewGroup
 import androidx.paging.LoadState
 import androidx.paging.LoadStateAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.pinkcloud.searchapplication.databinding.ThumbnailItemFooterBinding
+import com.pinkcloud.searchapplication.databinding.DocumentItemFooterBinding
 
-class ThumbnailLoadStateAdapter : LoadStateAdapter<ThumbnailLoadStateAdapter.ViewHolder>() {
+class DocumentLoadStateAdapter : LoadStateAdapter<DocumentLoadStateAdapter.ViewHolder>() {
 
     override fun onBindViewHolder(holder: ViewHolder, loadState: LoadState) {
         holder.bind(loadState)
@@ -18,7 +18,7 @@ class ThumbnailLoadStateAdapter : LoadStateAdapter<ThumbnailLoadStateAdapter.Vie
     }
 
     class ViewHolder(
-        private val binding: ThumbnailItemFooterBinding
+        private val binding: DocumentItemFooterBinding
     ) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(loadState: LoadState) {
@@ -28,7 +28,7 @@ class ThumbnailLoadStateAdapter : LoadStateAdapter<ThumbnailLoadStateAdapter.Vie
         companion object {
             fun create(parent: ViewGroup): ViewHolder {
                 val layoutInflater = LayoutInflater.from(parent.context)
-                val binding = ThumbnailItemFooterBinding.inflate(layoutInflater, parent, false)
+                val binding = DocumentItemFooterBinding.inflate(layoutInflater, parent, false)
                 return ViewHolder(binding)
             }
         }

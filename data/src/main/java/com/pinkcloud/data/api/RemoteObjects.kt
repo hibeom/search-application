@@ -1,6 +1,6 @@
 package com.pinkcloud.data.api
 
-import com.pinkcloud.domain.model.Thumbnail
+import com.pinkcloud.domain.model.Document
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
@@ -51,15 +51,15 @@ data class VideoDocument(
     val playTime: Int
 )
 
-fun ImageDocument.asThumbnail(): Thumbnail {
-    return Thumbnail(
+fun ImageDocument.asDocument(): Document {
+    return Document(
         thumbnailUrl = thumbnailUrl,
         datetime = datetime
     )
 }
 
-fun VideoDocument.asThumbnail(): Thumbnail {
-    return Thumbnail(
+fun VideoDocument.asDocument(): Document {
+    return Document(
         thumbnailUrl = thumbnailUrl,
         datetime = datetime
     )

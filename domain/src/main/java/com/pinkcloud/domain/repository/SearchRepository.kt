@@ -1,15 +1,14 @@
 package com.pinkcloud.domain.repository
 
 import androidx.paging.PagingData
-import com.pinkcloud.domain.model.Thumbnail
-import com.pinkcloud.domain.util.Result
+import com.pinkcloud.domain.model.Document
 import kotlinx.coroutines.flow.Flow
 
 interface SearchRepository {
 
-    fun getThumbnailPagingFlow(query: String): Flow<PagingData<Thumbnail>>
+    fun getDocumentPagingFlow(query: String): Flow<PagingData<Document>>
 
-    suspend fun saveThumbnails(thumbnails: Map<String, Thumbnail>)
+    suspend fun saveDocuments(documents: Map<String, Document>)
 
-    suspend fun getSavedThumbnails(): Map<String, Thumbnail>
+    suspend fun getSavedDocuments(): Map<String, Document>
 }

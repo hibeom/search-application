@@ -18,7 +18,7 @@
             android:id="@+id/list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:items="@{viewModel.savedThumbnails}"
+            app:items="@{viewModel.savedDocuments}"
             android:layout_marginTop="@dimen/margin_recycler_view"/>
 
         <TextView
@@ -29,7 +29,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:emptyVisibility="@{viewModel.savedThumbnails}"
+            app:emptyVisibility="@{viewModel.savedDocuments}"
             android:text="@string/empty_storage"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

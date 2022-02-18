@@ -6,10 +6,9 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.pinkcloud.data.di.DefaultDispatcher
-import com.pinkcloud.domain.model.Thumbnail
-import com.pinkcloud.domain.usecase.GetThumbnailsUseCase
-import com.pinkcloud.domain.usecase.SaveThumbnailsUseCase
-import com.pinkcloud.domain.util.Result
+import com.pinkcloud.domain.model.Document
+import com.pinkcloud.domain.usecase.GetDocumentsUseCase
+import com.pinkcloud.domain.usecase.SaveDocumentsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.*
@@ -19,8 +18,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SearchViewModel @Inject constructor(
-    private val getThumbnailsUseCase: GetThumbnailsUseCase,
-    private val saveThumbnailsUseCase: SaveThumbnailsUseCase,
+    private val getDocumentsUseCase: GetDocumentsUseCase,
+    private val saveDocumentsUseCase: SaveDocumentsUseCase,
     @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
@@ -29,52 +28,52 @@ class SearchViewModel @Inject constructor(
     val query: StateFlow<String>
         get() = _query
 
-    val pagingDataFlow: Flow<PagingData<Thumbnail>>
+    val pagingDataFlow: Flow<PagingData<Document>>
 
-    private val _selectedThumbnails = MutableStateFlow(mapOf<String, Thumbnail>())
-    val selectedThumbnails: StateFlow<Map<String, Thumbnail>>
-        get() = _selectedThumbnails
+    private val _selectedDocuments = MutableStateFlow(mapOf<String, Document>())
+    val selectedDocuments: StateFlow<Map<String, Document>>
+        get() = _selectedDocuments
 
     init {
         val initialQuery: String = savedStateHandle.get(LAST_SEARCH_QUERY) ?: DEFAULT_QUERY
         _query.value = initialQuery
         pagingDataFlow = query.flatMapLatest {
-            getThumbnailsUseCase(it)
+            getDocumentsUseCase(it)
         }.cachedIn(viewModelScope)
     }
 
     fun search(query: String) {
         _query.value = query
-        _selectedThumbnails.value = mapOf()
+        _selectedDocuments.value = mapOf()
     }
 
     fun save() {
         viewModelScope.launch {
-            saveThumbnailsUseCase(selectedThumbnails.value)
+            saveDocumentsUseCase(selectedDocuments.value)
         }
     }
 
-    fun onSelectThumbnail(thumbnail: Thumbnail) {
+    fun onSelectDocument(document: Document) {
         viewModelScope.launch {
-            selectedThumbnails.value[thumbnail.thumbnailUrl]?.let {
-                removeSelectedThumbnail(thumbnail)
+            selectedDocuments.value[document.thumbnailUrl]?.let {
+                removeSelectedDocument(document)
             } ?: run {
-                addSelectedThumbnail(thumbnail)
+                addSelectedDocument(document)
             }
         }
     }
 
-    private suspend fun addSelectedThumbnail(thumbnail: Thumbnail) =
+    private suspend fun addSelectedDocument(document: Document) =
         withContext(defaultDispatcher) {
-            _selectedThumbnails.value = selectedThumbnails.value.toMutableMap().also { map ->
-                map[thumbnail.thumbnailUrl!!] = thumbnail
+            _selectedDocuments.value = selectedDocuments.value.toMutableMap().also { map ->
+                map[document.thumbnailUrl!!] = document
             }
         }
 
-    private suspend fun removeSelectedThumbnail(thumbnail: Thumbnail) =
+    private suspend fun removeSelectedDocument(document: Document) =
         withContext(defaultDispatcher) {
-            _selectedThumbnails.value = selectedThumbnails.value.toMutableMap().also { map ->
-                map.remove(thumbnail.thumbnailUrl)
+            _selectedDocuments.value = selectedDocuments.value.toMutableMap().also { map ->
+                map.remove(document.thumbnailUrl)
             }
         }
 

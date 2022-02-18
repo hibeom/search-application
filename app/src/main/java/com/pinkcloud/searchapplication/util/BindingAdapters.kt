@@ -7,15 +7,13 @@ import androidx.core.view.isVisible
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.pinkcloud.domain.model.Thumbnail
-import com.pinkcloud.domain.util.Result
+import com.pinkcloud.domain.model.Document
 import com.pinkcloud.searchapplication.R
-import com.pinkcloud.searchapplication.ui.search.ThumbnailPagingAdapter
-import com.pinkcloud.searchapplication.ui.storage.ThumbnailAdapter
+import com.pinkcloud.searchapplication.ui.storage.DocumentAdapter
 
 @BindingAdapter("image")
-fun setImage(imageView: ImageView, image: Thumbnail) {
-    image.run {
+fun setImage(imageView: ImageView, document: Document) {
+    document.run {
         Glide.with(imageView)
             .load(thumbnailUrl)
             .placeholder(R.color.gray)
@@ -24,20 +22,20 @@ fun setImage(imageView: ImageView, image: Thumbnail) {
     }
 }
 
-@BindingAdapter("selectedThumbnails")
-fun Button.setEnableBySelectedThumbnailsSize(thumbnails: Map<String, Thumbnail>) {
-    isEnabled = thumbnails.isNotEmpty()
+@BindingAdapter("selectedDocuments")
+fun Button.setEnableBySelectedDocumentsSize(documents: Map<String, Document>) {
+    isEnabled = documents.isNotEmpty()
 }
 
 @BindingAdapter("items")
-fun setItems(list: RecyclerView, thumbnails: List<Thumbnail>) {
-    val adapter = list.adapter as? ThumbnailAdapter
+fun setItems(list: RecyclerView, documents: List<Document>) {
+    val adapter = list.adapter as? DocumentAdapter
     adapter?.let {
-        adapter.submitList(thumbnails)
+        adapter.submitList(documents)
     }
 }
 
 @BindingAdapter("emptyVisibility")
-fun setEmptyVisibility(textView: TextView, thumbnails: List<Thumbnail>) {
-    textView.isVisible = thumbnails.isEmpty()
+fun setEmptyVisibility(textView: TextView, documents: List<Document>) {
+    textView.isVisible = documents.isEmpty()
 }
