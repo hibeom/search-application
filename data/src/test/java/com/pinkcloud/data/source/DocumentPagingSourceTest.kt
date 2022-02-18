@@ -1,17 +1,15 @@
 package com.pinkcloud.data.source
 
-import org.junit.Before
-import androidx.paging.PagingSource.LoadResult
 import androidx.paging.PagingSource.LoadParams
+import androidx.paging.PagingSource.LoadResult
 import com.pinkcloud.data.api.ImageDocument
 import com.pinkcloud.data.api.VideoDocument
 import com.pinkcloud.data.api.asDocument
-import com.pinkcloud.domain.model.Document
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
+import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals
-import kotlin.test.fail
 
 @ExperimentalCoroutinesApi
 class DocumentPagingSourceTest {
@@ -78,7 +76,7 @@ class DocumentPagingSourceTest {
                 nextKey = page+1
             ),
             actual = pagingSource.load(
-                LoadParams.Refresh(
+                LoadParams.Append(
                     key = page,
                     loadSize = IMAGE_PAGE_SIZE + VIDEO_PAGE_SIZE,
                     placeholdersEnabled = true
@@ -103,7 +101,7 @@ class DocumentPagingSourceTest {
                 nextKey = null
             ),
             actual = pagingSource.load(
-                LoadParams.Refresh(
+                LoadParams.Append(
                     key = page,
                     loadSize = IMAGE_PAGE_SIZE + VIDEO_PAGE_SIZE,
                     placeholdersEnabled = true
