@@ -25,6 +25,10 @@ class DocumentPagingAdapter(
             }
         }
 
+        fun reset() {
+            binding.isSelected = false
+        }
+
         companion object {
             fun from(parent: ViewGroup): ViewHolder {
                 val layoutInflater = LayoutInflater.from(parent.context)

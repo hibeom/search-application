@@ -15,6 +15,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.paging.LoadState
 import androidx.paging.PagingData
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.pinkcloud.domain.model.Document
 import com.pinkcloud.searchapplication.databinding.SearchFragmentBinding
 import com.pinkcloud.searchapplication.util.calculateSpanCount
@@ -47,7 +48,8 @@ class SearchFragment : Fragment() {
             pagingDataFlow = viewModel.pagingDataFlow,
             onClickDocument = { document ->
                 viewModel.onSelectDocument(document)
-            }
+            },
+            onSave = { viewModel.save() }
         )
 
         return binding.root
@@ -87,7 +89,8 @@ class SearchFragment : Fragment() {
 
     private fun SearchFragmentBinding.setSearchResult(
         pagingDataFlow: Flow<PagingData<Document>>,
-        onClickDocument: (Document) -> Unit
+        onClickDocument: (Document) -> Unit,
+        onSave: () -> Unit
     ) {
         val spanCount = calculateSpanCount(requireActivity())
         val footerAdapter = DocumentLoadStateAdapter()
@@ -108,29 +111,45 @@ class SearchFragment : Fragment() {
 
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                pagingDataFlow
-                    .collectLatest { pagingData ->
-                        documentAdapter.submitData(pagingData)
+                launch {
+                    pagingDataFlow
+                        .collectLatest { pagingData ->
+                            documentAdapter.submitData(pagingData)
+                        }
+                }
+                launch {
+                    documentAdapter.loadStateFlow.collectLatest { loadState ->
+                        val isListEmpty =
+                            loadState.refresh is LoadState.NotLoading && documentAdapter.itemCount == 0
+                        textEmpty.isVisible = isListEmpty
+                        list.isVisible = !isListEmpty
+                        textError.isVisible = loadState.source.refresh is LoadState.Error
+                        swipeRefreshLayout.isRefreshing =
+                            loadState.source.refresh is LoadState.Loading
+                        if (loadState.source.refresh is LoadState.Error) list.isVisible = false
                     }
-            }
-        }
-
-        lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                documentAdapter.loadStateFlow.collectLatest { loadState ->
-                    val isListEmpty =
-                        loadState.refresh is LoadState.NotLoading && documentAdapter.itemCount == 0
-                    textEmpty.isVisible = isListEmpty
-                    list.isVisible = !isListEmpty
-                    textError.isVisible = loadState.source.refresh is LoadState.Error
-                    swipeRefreshLayout.isRefreshing = loadState.source.refresh is LoadState.Loading
-                    if (loadState.source.refresh is LoadState.Error) list.isVisible = false
                 }
             }
         }
 
         swipeRefreshLayout.setOnRefreshListener {
             documentAdapter.refresh()
+        }
+
+        pickButton.setOnClickListener {
+            onSave()
+            resetVisibleViewHolder(list)
+        }
+    }
+
+    private fun resetVisibleViewHolder(
+        list: RecyclerView
+    ) {
+        val lm = list.layoutManager as GridLayoutManager
+        val first = lm.findFirstVisibleItemPosition()
+        val last = lm.findLastVisibleItemPosition()
+        for (position in first..last) {
+            (list.findViewHolderForLayoutPosition(position) as DocumentPagingAdapter.ViewHolder).reset()
         }
     }
 }

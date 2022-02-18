@@ -10,5 +10,5 @@ interface SearchRepository {
 
     suspend fun saveDocuments(documents: Map<String, Document>)
 
-    suspend fun getSavedDocuments(): Map<String, Document>
+    fun getSavedDocuments(): Flow<Map<String, Document>>
 }
