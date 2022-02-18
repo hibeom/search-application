@@ -26,21 +26,13 @@ class DocumentPagingSource(
     override fun getRefreshKey(state: PagingState<Int, Document>): Int? {
         isImagePageEnd = false
         isVideoPageEnd = false
-        // TODO return null 확인
-        return state.anchorPosition?.let { anchorPosition ->
-            state.closestPageToPosition(anchorPosition)?.prevKey?.plus(1)
-                ?: state.closestPageToPosition(anchorPosition)?.nextKey?.minus(1)
-        }
+        return null
     }
 
-    // https://stackoverflow.com/questions/64830990/android-paging3-varying-page-size
-    // pageSize is just a hint that is sent to LoadParams,
-    // paging3 can handle variable page sizes just fine and your PagingSource dorsn't need to respect what loadSize is requested.
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Document> {
         val position = params.key ?: START_PAGE_INDEX
-
         return try {
-            val imageDocuments = if (!isImagePageEnd) {
+            val imageDocuments = if (!isImagePageEnd && position <= MAX_IMAGE_PAGE) {
                 val imageResponse =
                     service.getImages(query, position, IMAGE_PAGE_SIZE)
                 isImagePageEnd = imageResponse.meta.isEnd
@@ -49,7 +41,7 @@ class DocumentPagingSource(
                 }
             } else listOf()
 
-            val videoDocuments = if (!isVideoPageEnd) {
+            val videoDocuments = if (!isVideoPageEnd && position <= MAX_VIDEO_PAGE) {
                 val videoResponse =
                     service.getVideos(query, position, VIDEO_PAGE_SIZE)
                 isVideoPageEnd = videoResponse.meta.isEnd

@@ -36,12 +36,17 @@ class DocumentPagingSourceTest {
 
     @Test
     fun load_refreshResult() = runTest {
-        val expectedList =
-            fakeImageDocuments.slice(0 until IMAGE_PAGE_SIZE).map {
-                it.asDocument()
-            } + fakeVideoDocuments.slice(0 until VIDEO_PAGE_SIZE).map {
+        val expectedImages = fakeImageDocuments
+            .slice(0 until IMAGE_PAGE_SIZE)
+            .map {
                 it.asDocument()
             }
+        val expectedVideos = fakeVideoDocuments
+            .slice(0 until VIDEO_PAGE_SIZE)
+            .map {
+                it.asDocument()
+            }
+        val expectedList = (expectedImages + expectedVideos).sortedByDescending { it.datetime }
 
         assertEquals(
             expected = LoadResult.Page(
@@ -62,18 +67,23 @@ class DocumentPagingSourceTest {
     @Test
     fun load_overVideoSize() = runTest {
         val page = FAKE_VIDEO_SIZE / VIDEO_PAGE_SIZE + 1
-        val expectedList =
-            fakeImageDocuments.slice((page-1)*IMAGE_PAGE_SIZE until (page)*IMAGE_PAGE_SIZE).map {
-                it.asDocument()
-            } + fakeVideoDocuments.slice((page-1)*VIDEO_PAGE_SIZE until FAKE_VIDEO_SIZE).map {
+        val expectedImages = fakeImageDocuments
+            .slice((page - 1) * IMAGE_PAGE_SIZE until (page) * IMAGE_PAGE_SIZE)
+            .map {
                 it.asDocument()
             }
+        val expectedVideos = fakeVideoDocuments
+            .slice((page - 1) * VIDEO_PAGE_SIZE until FAKE_VIDEO_SIZE)
+            .map {
+                it.asDocument()
+            }
+        val expectedList = (expectedImages + expectedVideos).sortedByDescending { it.datetime }
 
         assertEquals(
             expected = LoadResult.Page(
                 data = expectedList,
-                prevKey = page-1,
-                nextKey = page+1
+                prevKey = page - 1,
+                nextKey = page + 1
             ),
             actual = pagingSource.load(
                 LoadParams.Append(
@@ -89,15 +99,16 @@ class DocumentPagingSourceTest {
     fun load_isEnd() = runTest {
         val page = FAKE_IMAGE_SIZE / IMAGE_PAGE_SIZE + 1
 
-        val expectedList =
-            fakeImageDocuments.slice((page-1)*IMAGE_PAGE_SIZE until FAKE_IMAGE_SIZE).map {
+        val expectedList = fakeImageDocuments
+            .slice((page - 1) * IMAGE_PAGE_SIZE until FAKE_IMAGE_SIZE)
+            .map {
                 it.asDocument()
-            }
+            }.sortedByDescending { it.datetime }
 
         assertEquals(
             expected = LoadResult.Page(
                 data = expectedList,
-                prevKey = page-1,
+                prevKey = page - 1,
                 nextKey = null
             ),
             actual = pagingSource.load(
