@@ -10,6 +10,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
 import kotlin.test.assertEquals
+import kotlin.test.fail
 
 @ExperimentalCoroutinesApi
 class DocumentPagingSourceTest {
@@ -35,7 +36,7 @@ class DocumentPagingSourceTest {
     }
 
     @Test
-    fun load_nextKeyIs2_whenRefresh() = runTest {
+    fun load_refreshResult() = runTest {
         val expectedList =
             fakeImageDocuments.slice(0 until IMAGE_PAGE_SIZE).map {
                 it.asDocument()
@@ -57,5 +58,10 @@ class DocumentPagingSourceTest {
                 )
             )
         )
+    }
+
+    @Test
+    fun load_overVideoSize() = runTest {
+        fail()
     }
 }
