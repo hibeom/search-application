@@ -1,4 +1,4 @@
-package com.pinkcloud.data.source
+package com.pinkcloud.data.fake
 
 import com.pinkcloud.data.api.ImageDocument
 import com.pinkcloud.data.api.VideoDocument
@@ -7,7 +7,7 @@ import java.util.concurrent.atomic.AtomicInteger
 
 class DocumentFactory {
     private val counter = AtomicInteger(0)
-    private fun createDocument(): Document {
+    fun createDocument(): Document {
         val id = counter.incrementAndGet()
         return Document(
             thumbnailUrl = "https://thumbnail_url/$id",

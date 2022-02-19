@@ -3,8 +3,13 @@ package com.pinkcloud.data.source
 import androidx.paging.PagingSource.LoadParams
 import androidx.paging.PagingSource.LoadResult
 import com.pinkcloud.data.api.ImageDocument
+import com.pinkcloud.data.api.SearchService
 import com.pinkcloud.data.api.VideoDocument
 import com.pinkcloud.data.api.asDocument
+import com.pinkcloud.data.fake.DocumentFactory
+import com.pinkcloud.data.fake.FAKE_IMAGE_SIZE
+import com.pinkcloud.data.fake.FAKE_VIDEO_SIZE
+import com.pinkcloud.data.fake.FakeSearchService
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
@@ -14,7 +19,7 @@ import kotlin.test.assertEquals
 @ExperimentalCoroutinesApi
 class DocumentPagingSourceTest {
 
-    private val fakeSearchService: FakeSearchService
+    private val fakeSearchService: SearchService
 
     private lateinit var pagingSource: DocumentPagingSource
     private val fakeQuery = "fake query"

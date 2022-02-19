@@ -48,8 +48,9 @@ class SearchViewModel @Inject constructor(
     }
 
     fun save() {
+        val targetDocuments = selectedDocuments.value
         viewModelScope.launch {
-            saveDocumentsUseCase(selectedDocuments.value)
+            saveDocumentsUseCase(targetDocuments)
         }
         selectedDocuments.value.values.forEach { it.isSelected = false }
         _selectedDocuments.value = mapOf()
