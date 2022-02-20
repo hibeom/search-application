@@ -18,8 +18,7 @@
             android:id="@+id/list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:items="@{viewModel.savedDocuments}"
-            android:layout_marginTop="@dimen/margin_recycler_view"/>
+            app:items="@{viewModel.savedDocuments}"/>
 
         <TextView
             android:id="@+id/text_empty"
