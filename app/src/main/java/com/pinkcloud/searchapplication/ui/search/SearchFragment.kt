@@ -48,7 +48,10 @@ class SearchFragment : Fragment() {
             onClickDocument = { document ->
                 viewModel.onSelectDocument(document)
             },
-            onSave = { viewModel.save() }
+        )
+        binding.setOnSaveAction(
+            isSaveCompleted = viewModel.isSaveCompleted,
+            onSave = viewModel::resetSaveCompleted
         )
 
         return binding.root
@@ -81,7 +84,6 @@ class SearchFragment : Fragment() {
     private fun SearchFragmentBinding.setSearchResult(
         pagingDataFlow: Flow<PagingData<Document>>,
         onClickDocument: (Document) -> Unit,
-        onSave: () -> Unit
     ) {
         val spanCount = calculateSpanCount(requireActivity())
         val footerAdapter = DocumentLoadStateAdapter()
@@ -126,10 +128,23 @@ class SearchFragment : Fragment() {
         swipeRefreshLayout.setOnRefreshListener {
             documentAdapter.refresh()
         }
+    }
 
-        pickButton.setOnClickListener {
-            onSave()
-            resetVisibleViewHolder(list)
+    private fun SearchFragmentBinding.setOnSaveAction(
+        isSaveCompleted: Flow<Boolean>,
+        onSave: () -> Unit
+    ) {
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    isSaveCompleted.collect { isSaveCompleted ->
+                        if (isSaveCompleted) {
+                            resetVisibleViewHolder(list)
+                            onSave()
+                        }
+                    }
+                }
+            }
         }
     }
 

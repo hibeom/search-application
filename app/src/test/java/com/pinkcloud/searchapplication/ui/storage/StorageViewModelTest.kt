@@ -51,9 +51,7 @@ class StorageViewModelTest {
             storageViewModel.savedDocuments.collect {}
         }
 
-        async {
-            searchRepository.saveDocuments(documents)
-        }.await()
+        searchRepository.saveDocuments(documents)
 
         launch {
             storageViewModel.savedDocuments.value.let {

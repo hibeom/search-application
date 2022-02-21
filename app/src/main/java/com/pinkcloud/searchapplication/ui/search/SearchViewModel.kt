@@ -11,9 +11,11 @@ import com.pinkcloud.domain.usecase.GetDocumentsUseCase
 import com.pinkcloud.domain.usecase.SaveDocumentsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -34,6 +36,10 @@ class SearchViewModel @Inject constructor(
     val selectedDocuments: StateFlow<Map<String, Document>>
         get() = _selectedDocuments
 
+    private val _isSaveCompleted = MutableStateFlow(false)
+    val isSaveCompleted: StateFlow<Boolean>
+        get() = _isSaveCompleted
+
     init {
         val initialQuery: String = savedStateHandle.get(LAST_SEARCH_QUERY) ?: DEFAULT_QUERY
         _query.value = initialQuery
@@ -48,16 +54,24 @@ class SearchViewModel @Inject constructor(
     }
 
     fun save() {
-        val targetDocuments = selectedDocuments.value
-        viewModelScope.launch {
-            saveDocumentsUseCase(targetDocuments)
+        viewModelScope.launch(defaultDispatcher) {
+            saveDocumentsUseCase(selectedDocuments.value)
+            resetSelectedDocuments()
+            _isSaveCompleted.value = true
         }
+    }
+
+    fun resetSaveCompleted() {
+        _isSaveCompleted.value = false
+    }
+
+    private fun resetSelectedDocuments() {
         selectedDocuments.value.values.forEach { it.isSelected = false }
         _selectedDocuments.value = mapOf()
     }
 
     fun onSelectDocument(document: Document) {
-        viewModelScope.launch {
+        viewModelScope.launch(defaultDispatcher) {
             selectedDocuments.value[document.thumbnailUrl]?.let {
                 removeSelectedDocument(document)
             } ?: run {
@@ -66,19 +80,17 @@ class SearchViewModel @Inject constructor(
         }
     }
 
-    private suspend fun addSelectedDocument(document: Document) =
-        withContext(defaultDispatcher) {
-            _selectedDocuments.value = selectedDocuments.value.toMutableMap().also { map ->
-                map[document.thumbnailUrl!!] = document
-            }
+    private fun addSelectedDocument(document: Document) {
+        _selectedDocuments.value = selectedDocuments.value.toMutableMap().also { map ->
+            map[document.thumbnailUrl!!] = document
         }
+    }
 
-    private suspend fun removeSelectedDocument(document: Document) =
-        withContext(defaultDispatcher) {
-            _selectedDocuments.value = selectedDocuments.value.toMutableMap().also { map ->
-                map.remove(document.thumbnailUrl)
-            }
+    private fun removeSelectedDocument(document: Document) {
+        _selectedDocuments.value = selectedDocuments.value.toMutableMap().also { map ->
+            map.remove(document.thumbnailUrl)
         }
+    }
 
     override fun onCleared() {
         savedStateHandle[LAST_SEARCH_QUERY] = query.value
