@@ -1,7 +1,6 @@
 package com.pinkcloud.searchapplication.ui.search
 
 import android.os.Bundle
-import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -60,20 +59,12 @@ class SearchFragment : Fragment() {
     ) {
         searchTextInput.apply {
             setOnEditorActionListener { _, actionId, _ ->
-                if (actionId == EditorInfo.IME_ACTION_GO) {
+                if (actionId == EditorInfo.IME_ACTION_GO || actionId == EditorInfo.IME_ACTION_SEARCH) {
                     hideKeyboard(context, this)
+                    clearFocus()
                     searchInput(onSearch)
                     true
                 } else false
-            }
-            setOnKeyListener { _, keyCode, keyEvent ->
-                if (keyEvent.action == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER) {
-                    searchInput(onSearch)
-                    true
-                } else false
-            }
-            setOnFocusChangeListener { view, hasFocus ->
-                if (!hasFocus) hideKeyboard(context, view)
             }
         }
     }

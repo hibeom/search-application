@@ -9,7 +9,7 @@
             type="com.pinkcloud.searchapplication.ui.search.SearchViewModel" />
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <com.pinkcloud.searchapplication.ui.search.HideKeyboardConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".ui.search.SearchFragment">
@@ -30,7 +30,7 @@
                 android:layout_height="wrap_content"
                 android:text="@{viewModel.query}"
                 android:hint="@string/search"
-                android:imeOptions="actionSearch"
+                android:imeOptions="actionSearch|flagNoExtractUi"
                 android:inputType="textNoSuggestions"
                 android:selectAllOnFocus="true"/>
 
@@ -82,5 +82,5 @@
             app:layout_constraintEnd_toEndOf="parent"
             android:text="@string/empty_result"/>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.pinkcloud.searchapplication.ui.search.HideKeyboardConstraintLayout>
 </layout>
