@@ -5,6 +5,18 @@
 
     <data>
 
+        <import type="androidx.paging.LoadState" />
+
+        <import type="android.view.View" />
+
+        <variable
+            name="isListEmpty"
+            type="java.lang.Boolean" />
+
+        <variable
+            name="pagingLoadState"
+            type="androidx.paging.CombinedLoadStates" />
+
         <variable
             name="viewModel"
             type="com.pinkcloud.searchapplication.ui.search.SearchViewModel" />
@@ -55,12 +67,15 @@
             android:layout_height="0dp"
             android:layout_marginTop="@dimen/margin_recycler_view"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/text_input_layout">
+            app:layout_constraintTop_toBottomOf="@id/text_input_layout"
+            app:loadState="@{pagingLoadState}">
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/list"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                app:isEmpty="@{isListEmpty}"
+                app:loadState="@{pagingLoadState}" />
 
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
@@ -69,6 +84,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/network_error_occurred"
+            android:visibility="@{pagingLoadState.source.refresh instanceof LoadState.Error ? View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -79,6 +95,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/empty_result"
+            android:visibility="@{isListEmpty ? View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

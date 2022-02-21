@@ -5,7 +5,10 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.view.isVisible
 import androidx.databinding.BindingAdapter
+import androidx.paging.CombinedLoadStates
+import androidx.paging.LoadState
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.bumptech.glide.Glide
 import com.pinkcloud.domain.model.Document
 import com.pinkcloud.searchapplication.R
@@ -38,4 +41,18 @@ fun setItems(list: RecyclerView, documents: List<Document>) {
 @BindingAdapter("emptyVisibility")
 fun setEmptyVisibility(textView: TextView, documents: List<Document>) {
     textView.isVisible = documents.isEmpty()
+}
+
+@BindingAdapter("loadState")
+fun setRefreshing(refreshLayout: SwipeRefreshLayout, loadState: CombinedLoadStates?) {
+    refreshLayout.isRefreshing = loadState?.source?.refresh is LoadState.Loading
+}
+
+@BindingAdapter("loadState", "isEmpty")
+fun setPagingRecyclerviewVisibility(
+    list: RecyclerView,
+    loadState: CombinedLoadStates?,
+    isEmpty: Boolean
+) {
+    list.isVisible = loadState?.source?.refresh !is LoadState.Error && !isEmpty
 }

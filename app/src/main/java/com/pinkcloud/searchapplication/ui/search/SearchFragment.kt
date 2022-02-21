@@ -103,7 +103,7 @@ class SearchFragment : Fragment() {
         }
 
         lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
                     pagingDataFlow
                         .collectLatest { pagingData ->
@@ -112,14 +112,9 @@ class SearchFragment : Fragment() {
                 }
                 launch {
                     documentAdapter.loadStateFlow.collectLatest { loadState ->
-                        val isListEmpty =
+                        pagingLoadState = loadState
+                        isListEmpty =
                             loadState.refresh is LoadState.NotLoading && documentAdapter.itemCount == 0
-                        textEmpty.isVisible = isListEmpty
-                        list.isVisible = !isListEmpty
-                        textError.isVisible = loadState.source.refresh is LoadState.Error
-                        swipeRefreshLayout.isRefreshing =
-                            loadState.source.refresh is LoadState.Loading
-                        if (loadState.source.refresh is LoadState.Error) list.isVisible = false
                     }
                 }
             }
@@ -135,7 +130,7 @@ class SearchFragment : Fragment() {
         onSave: () -> Unit
     ) {
         lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
                     isSaveCompleted.collect { isSaveCompleted ->
                         if (isSaveCompleted) {

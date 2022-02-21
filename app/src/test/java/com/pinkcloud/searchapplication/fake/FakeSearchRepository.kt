@@ -12,12 +12,12 @@ import kotlinx.coroutines.withContext
 
 class FakeSearchRepository(
     @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher,
-    ) : SearchRepository {
+) : SearchRepository {
 
     private val savedDocuments = MutableStateFlow(mapOf<String, Document>())
 
     override fun getDocumentPagingFlow(query: String): Flow<PagingData<Document>> {
-        return flow {  }
+        return flow { }
     }
 
     override suspend fun saveDocuments(documents: Map<String, Document>) =
