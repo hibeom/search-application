@@ -10,6 +10,7 @@ import com.pinkcloud.data.fake.DocumentFactory
 import com.pinkcloud.data.fake.FAKE_IMAGE_SIZE
 import com.pinkcloud.data.fake.FAKE_VIDEO_SIZE
 import com.pinkcloud.data.fake.FakeSearchService
+import com.pinkcloud.domain.model.Document
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
@@ -51,7 +52,7 @@ class DocumentPagingSourceTest {
             .map {
                 it.asDocument()
             }
-        val expectedList = (expectedImages + expectedVideos).sortedByDescending { it.datetime }
+        val expectedList = getExpectedList(expectedImages, expectedVideos)
 
         assertEquals(
             expected = LoadResult.Page(
@@ -82,7 +83,7 @@ class DocumentPagingSourceTest {
             .map {
                 it.asDocument()
             }
-        val expectedList = (expectedImages + expectedVideos).sortedByDescending { it.datetime }
+        val expectedList = getExpectedList(expectedImages, expectedVideos)
 
         assertEquals(
             expected = LoadResult.Page(
@@ -124,5 +125,17 @@ class DocumentPagingSourceTest {
                 )
             )
         )
+    }
+
+    private fun getExpectedList(
+        imageDocuments: List<Document>,
+        videoDocuments: List<Document>
+    ): List<Document> {
+        val lastImageDate = imageDocuments.last().datetime
+        val lastVideoDate = videoDocuments.last().datetime
+        val flagDate = if (lastImageDate > lastVideoDate) lastImageDate else lastVideoDate
+        return (imageDocuments + videoDocuments)
+            .sortedByDescending { it.datetime }
+            .filter { it.datetime >= flagDate }
     }
 }

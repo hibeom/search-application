@@ -30,18 +30,15 @@ class DocumentFactory {
     private fun Document.asImageDocument() = ImageDocument(
         thumbnailUrl = this.thumbnailUrl,
         datetime = this.datetime,
-        collection = null,
-        imageUrl = null,
-        width = null,
-        height = null
+        collection = "collection",
+        imageUrl = "image_url",
     )
 
     private fun Document.asVideoDocument() = VideoDocument(
         thumbnailUrl = this.thumbnailUrl,
         datetime = this.datetime,
-        author = null,
-        playTime = null,
-        title = null,
-        videoUrl = null
+        author = "author",
+        title = "title",
+        videoUrl = "video_url"
     )
 }

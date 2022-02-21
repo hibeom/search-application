@@ -2,6 +2,7 @@ package com.pinkcloud.data.source
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
+import com.pinkcloud.data.api.DocumentResponse
 import com.pinkcloud.data.api.SearchService
 import com.pinkcloud.data.api.asDocument
 import com.pinkcloud.domain.model.Document
@@ -22,10 +23,14 @@ class DocumentPagingSource(
 
     private var isImagePageEnd = false
     private var isVideoPageEnd = false
+    private val tempImageDocuments = mutableListOf<Document>()
+    private val tempVideoDocuments = mutableListOf<Document>()
 
     override fun getRefreshKey(state: PagingState<Int, Document>): Int? {
         isImagePageEnd = false
         isVideoPageEnd = false
+        tempImageDocuments.clear()
+        tempVideoDocuments.clear()
         return null
     }
 
@@ -33,24 +38,56 @@ class DocumentPagingSource(
         val position = params.key ?: START_PAGE_INDEX
         return try {
             val imageDocuments = if (!isImagePageEnd && position <= MAX_IMAGE_PAGE) {
-                val imageResponse =
-                    service.getImages(query, position, IMAGE_PAGE_SIZE)
-                isImagePageEnd = imageResponse.meta.isEnd
+                val imageResponse = service.getImages(query, position, IMAGE_PAGE_SIZE)
+                isImagePageEnd = imageResponse.isEnd()
                 imageResponse.documents.map {
                     it.asDocument()
                 }
             } else listOf()
+            val concatenatedImageDocuments = tempImageDocuments + imageDocuments
+            tempImageDocuments.clear()
 
             val videoDocuments = if (!isVideoPageEnd && position <= MAX_VIDEO_PAGE) {
-                val videoResponse =
-                    service.getVideos(query, position, VIDEO_PAGE_SIZE)
-                isVideoPageEnd = videoResponse.meta.isEnd
+                val videoResponse = service.getVideos(query, position, VIDEO_PAGE_SIZE)
+                isVideoPageEnd = videoResponse.isEnd()
                 videoResponse.documents.map {
                     it.asDocument()
                 }
             } else listOf()
+            val concatenatedVideoDocuments = tempVideoDocuments + videoDocuments
+            tempVideoDocuments.clear()
 
-            val documents = (imageDocuments + videoDocuments).sortedByDescending { it.datetime }
+            val lastImageDate = concatenatedImageDocuments.lastOrNull()?.datetime
+            val lastVideoDate = concatenatedVideoDocuments.lastOrNull()?.datetime
+            val flagDate = if (lastImageDate != null && lastVideoDate != null) {
+                if (lastImageDate > lastVideoDate) lastImageDate else lastVideoDate
+            } else lastImageDate ?: lastVideoDate
+
+            val imageDocumentsAfterFlagDate = flagDate?.let {
+                concatenatedImageDocuments.filter {
+                    it.datetime >= flagDate
+                }
+            } ?: run { listOf() }
+            val videoDocumentsAfterFlagDate = flagDate?.let {
+                concatenatedVideoDocuments.filter {
+                    it.datetime >= flagDate
+                }
+            } ?: run { listOf() }
+
+            flagDate?.let { date ->
+                concatenatedImageDocuments.filter { document ->
+                    document.datetime < date
+                }.also { filteredDocuments ->
+                    tempImageDocuments.addAll(filteredDocuments)
+                }
+                concatenatedVideoDocuments.filter { document ->
+                    document.datetime < date
+                }.also { filteredDocuments ->
+                    tempVideoDocuments.addAll(filteredDocuments)
+                }
+            }
+
+            val documents = (imageDocumentsAfterFlagDate + videoDocumentsAfterFlagDate).sortedByDescending { it.datetime }
             val isEnd = isImagePageEnd && isVideoPageEnd
 
             val nextKey = if (isEnd || documents.isEmpty() || position >= MAX_IMAGE_PAGE) {
@@ -71,4 +108,6 @@ class DocumentPagingSource(
             LoadResult.Error(exception)
         }
     }
+
+    private fun DocumentResponse.isEnd() = meta.isEnd || documents.isEmpty()
 }

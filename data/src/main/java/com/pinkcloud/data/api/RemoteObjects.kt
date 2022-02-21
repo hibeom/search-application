@@ -6,15 +6,20 @@ import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
 data class ImageResponse(
-    val meta: Meta,
-    val documents: List<ImageDocument>
-)
+    override val meta: Meta,
+    override val documents: List<ImageDocument>
+) : DocumentResponse
 
 @JsonClass(generateAdapter = true)
 data class VideoResponse(
-    val meta: Meta,
-    val documents: List<VideoDocument>
-)
+    override val meta: Meta,
+    override val documents: List<VideoDocument>
+) : DocumentResponse
+
+interface DocumentResponse {
+    val meta: Meta
+    val documents: List<NetworkDocument>
+}
 
 @JsonClass(generateAdapter = true)
 data class Meta(
@@ -28,39 +33,28 @@ data class Meta(
 
 @JsonClass(generateAdapter = true)
 data class ImageDocument(
-    val collection: String?,
+    val collection: String,
     @Json(name = "thumbnail_url")
-    val thumbnailUrl: String?,
+    override val thumbnailUrl: String,
     @Json(name = "image_url")
-    val imageUrl: String?,
-    val width: Int?,
-    val height: Int?,
-    val datetime: String?
-)
+    val imageUrl: String,
+    override val datetime: String
+) : NetworkDocument
 
 @JsonClass(generateAdapter = true)
 data class VideoDocument(
-    val title: String?,
+    val title: String,
     @Json(name = "thumbnail")
-    val thumbnailUrl: String?,
+    override val thumbnailUrl: String,
     @Json(name = "url")
-    val videoUrl: String?,
-    val datetime: String?,
-    val author: String?,
-    @Json(name = "play_time")
-    val playTime: Int?
-)
+    val videoUrl: String,
+    override val datetime: String,
+    val author: String,
+) : NetworkDocument
 
-fun ImageDocument.asDocument(): Document {
-    return Document(
-        thumbnailUrl = thumbnailUrl,
-        datetime = datetime
-    )
+interface NetworkDocument {
+    val thumbnailUrl: String
+    val datetime: String
 }
 
-fun VideoDocument.asDocument(): Document {
-    return Document(
-        thumbnailUrl = thumbnailUrl,
-        datetime = datetime
-    )
-}
+fun NetworkDocument.asDocument() = Document(thumbnailUrl, datetime)
