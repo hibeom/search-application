@@ -11,8 +11,13 @@ import com.pinkcloud.data.fake.FAKE_IMAGE_SIZE
 import com.pinkcloud.data.fake.FAKE_VIDEO_SIZE
 import com.pinkcloud.data.fake.FakeSearchService
 import com.pinkcloud.domain.model.Document
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
+import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -20,6 +25,7 @@ import kotlin.test.assertEquals
 @ExperimentalCoroutinesApi
 class DocumentPagingSourceTest {
 
+    private val testDispatcher = StandardTestDispatcher()
     private val fakeSearchService: SearchService
 
     private lateinit var pagingSource: DocumentPagingSource
@@ -37,7 +43,13 @@ class DocumentPagingSourceTest {
 
     @Before
     fun initializePagingSource() {
-        pagingSource = DocumentPagingSource(fakeSearchService, fakeQuery)
+        Dispatchers.setMain(testDispatcher)
+        pagingSource = DocumentPagingSource(fakeSearchService, fakeQuery, testDispatcher)
+    }
+
+    @After
+    fun tearDown() {
+        Dispatchers.resetMain()
     }
 
     @Test

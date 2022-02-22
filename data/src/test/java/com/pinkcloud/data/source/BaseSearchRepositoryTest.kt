@@ -35,7 +35,7 @@ class BaseSearchRepositoryTest {
     @Before
     fun setup() {
         searchRepository = BaseSearchRepository(
-            pagingDataSource = BasePagingDataSource(fakeSearchService),
+            pagingDataSource = BasePagingDataSource(fakeSearchService, testDispatcher),
             defaultDispatcher = testDispatcher
         )
     }
@@ -51,8 +51,8 @@ class BaseSearchRepositoryTest {
         val document1 = documentFactory.createDocument()
         val document2 = documentFactory.createDocument()
         val documentsToBeSaved = mapOf(
-            document1.thumbnailUrl!! to document1,
-            document2.thumbnailUrl!! to document2
+            document1.thumbnailUrl to document1,
+            document2.thumbnailUrl to document2
         )
         searchRepository.saveDocuments(documentsToBeSaved)
         val savedDocuments = searchRepository.getSavedDocuments().first()
@@ -67,11 +67,11 @@ class BaseSearchRepositoryTest {
         val document1 = documentFactory.createDocument()
         val document2 = documentFactory.createDocument()
         val documentsToBeSaved1 = mapOf(
-            document1.thumbnailUrl!! to document1,
-            document2.thumbnailUrl!! to document2
+            document1.thumbnailUrl to document1,
+            document2.thumbnailUrl to document2
         )
         val documentsToBeSaved2 = mapOf(
-            document1.thumbnailUrl!! to document1
+            document1.thumbnailUrl to document1
         )
         searchRepository.saveDocuments(documentsToBeSaved1)
         searchRepository.saveDocuments(documentsToBeSaved2)
