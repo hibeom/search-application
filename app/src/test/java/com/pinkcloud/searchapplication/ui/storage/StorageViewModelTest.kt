@@ -51,12 +51,12 @@ class StorageViewModelTest {
             storageViewModel.savedDocuments.collect {}
         }
 
-        searchRepository.saveDocuments(documents)
-
         launch {
-            storageViewModel.savedDocuments.value.let {
-                assertEquals(2, it.size)
-            }
+            searchRepository.saveDocuments(documents)
+        }.join()
+
+        storageViewModel.savedDocuments.value.let {
+            assertEquals(2, it.size)
         }
 
         collectingJob.cancel()

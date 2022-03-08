@@ -56,13 +56,13 @@ class SearchViewModelTest {
     fun onSelectDocument_selectTwoDocuments() = runTest {
         val doc1 = Document("https://thumbnail1", System.currentTimeMillis().toString())
         val doc2 = Document("https://thumbnail2", System.currentTimeMillis().toString())
-        searchViewModel.onSelectDocument(doc1)
-        searchViewModel.onSelectDocument(doc2)
-
         launch {
-            searchViewModel.selectedDocuments.value.let {
-                assertEquals(2, it.size)
-            }
+            searchViewModel.onSelectDocument(doc1)
+            searchViewModel.onSelectDocument(doc2)
+        }.join()
+
+        searchViewModel.selectedDocuments.value.let {
+            assertEquals(2, it.size)
         }
     }
 
@@ -70,14 +70,14 @@ class SearchViewModelTest {
     fun onSelectDocument_selectTwoDocuments_thenSelectOneAgain() = runTest {
         val doc1 = Document("https://thumbnail1", System.currentTimeMillis().toString())
         val doc2 = Document("https://thumbnail2", System.currentTimeMillis().toString())
-        searchViewModel.onSelectDocument(doc1)
-        searchViewModel.onSelectDocument(doc2)
-        searchViewModel.onSelectDocument(doc1)
-
         launch {
-            searchViewModel.selectedDocuments.value.let {
-                assertEquals(1, it.size)
-            }
+            searchViewModel.onSelectDocument(doc1)
+            searchViewModel.onSelectDocument(doc2)
+            searchViewModel.onSelectDocument(doc1)
+        }.join()
+
+        searchViewModel.selectedDocuments.value.let {
+            assertEquals(1, it.size)
         }
     }
 
@@ -86,18 +86,17 @@ class SearchViewModelTest {
         val doc1 = Document("https://thumbnail1", System.currentTimeMillis().toString())
         val doc2 = Document("https://thumbnail2", System.currentTimeMillis().toString())
 
-        searchViewModel.onSelectDocument(doc1)
-        searchViewModel.onSelectDocument(doc2)
-
-        searchViewModel.save()
-
         launch {
-            searchViewModel.selectedDocuments.value.let {
-                assertEquals(0, it.size)
-            }
-            searchRepository.getSavedDocuments().first().let {
-                assertEquals(2, it.size)
-            }
+            searchViewModel.onSelectDocument(doc1)
+            searchViewModel.onSelectDocument(doc2)
+            searchViewModel.save()
+        }.join()
+
+        searchViewModel.selectedDocuments.value.let {
+            assertEquals(0, it.size)
+        }
+        searchRepository.getSavedDocuments().first().let {
+            assertEquals(2, it.size)
         }
     }
 }
