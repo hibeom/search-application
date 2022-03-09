@@ -1,6 +1,6 @@
 # search-application
 
-스택
+### 스택
 
 - MVVM 패턴 & App architecture (클린 아키텍처)
 - Coroutine & Flow
@@ -10,6 +10,12 @@
 - DataBinding
 - DI with Hilt
 
-구조
+### 구조
 
-<img src="readme_images/architecture_1.jpg" width="560" height="420">
+| <img src="readme_images/architecture_1.jpg" width="560" height="420"> |
+|:--:|
+| *앱 구조* |
+
+| <img src="readme_images/architecture_2.jpg" width="560" height="420"> |
+|:--:|
+| *Layer, 모듈에 따른 세부구조* |
