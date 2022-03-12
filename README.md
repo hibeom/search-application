@@ -9,6 +9,7 @@
 - AAC ( ViewModel, Paging, Lifecycle with flow )
 - DataBinding
 - DI with Hilt
+- Unit/UI test
 
 ### 구조
 
